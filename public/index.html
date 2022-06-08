@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>애플마켓</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/index.html">애플마켓</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-link" href="/upload.html">내 물건 팔기</a>
+            <a class="nav-link" href="/login.html">로그인</a>
+            <a class="nav-link" href="/signup.html">회원가입</a>
+            <a class="nav-link disabled">Disabled</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-3"></div>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+    <script type="module">
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDrQt-d2y4dmlRlvUDwf7x49yCINR0DgZw",
+        authDomain: "market-905c2.firebaseapp.com",
+        projectId: "market-905c2",
+        storageBucket: "market-905c2.appspot.com",
+        messagingSenderId: "265906989637",
+        appId: "1:265906989637:web:6afdc540bc0adb3762512c",
+      };
+
+      // Initialize Firebase
+      export default firebase.initializeApp(firebaseConfig);
+
+      const db = firebase.firestore();
+      db.collection("products")
+        .get()
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            console.log(doc.data());
+            const template = `
+            <div class="product">
+              <div
+                class="thumbnail"
+                style="background-image: url('${doc.data().image}')"
+              ></div>
+              <div class="flex-grow-1 p-4">
+                <h5 class="title">${doc.data().name}</h5>
+                <p class="date">${doc.data().date[0]}년 ${
+              doc.data().date[1]
+            }월 ${doc.data().date[2]}일</p>
+                <p class="price">${doc.data().price}</p>
+                <p class="float-end">👍🏻 0</p>
+              </div>
+            </div>
+            `;
+            $(".container").append(template);
+          });
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>로그인 - 애플마켓</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/index.html">애플마켓</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-link" href="/upload.html">내 물건 팔기</a>
+            <a class="nav-link active" href="/login.html">로그인</a>
+            <a class="nav-link" href="/signup.html">회원가입</a>
+            <a class="nav-link disabled">Disabled</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <form class="container mt-3" id="signInForm">
+      <div class="mb-3">
+        <input
+          type="email"
+          class="form-control"
+          placeholder="email"
+          id="email"
+        />
+      </div>
+      <div class="mb-3">
+        <input type="password" class="form-control" placeholder="pw" id="pw" />
+      </div>
+      <button type="submit" class="btn btn-primary" id="signIn">로그인</button>
+      <button class="btn btn-primary" id="signOut">로그아웃</button>
+    </form>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+    <script type="module">
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDrQt-d2y4dmlRlvUDwf7x49yCINR0DgZw",
+        authDomain: "market-905c2.firebaseapp.com",
+        projectId: "market-905c2",
+        storageBucket: "market-905c2.appspot.com",
+        messagingSenderId: "265906989637",
+        appId: "1:265906989637:web:6afdc540bc0adb3762512c",
+      };
+
+      // Initialize Firebase
+      export default firebase.initializeApp(firebaseConfig);
+
+      const db = firebase.firestore();
+      const $signInForm = document.getElementById("signInForm");
+      const $name = document.getElementById("name");
+      const $email = document.getElementById("email");
+      const $pw = document.getElementById("pw");
+      const $signIn = document.getElementById("signIn");
+      const $signOut = document.getElementById("signOut");
+
+      // signIn
+      $signInForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const emailVal = $email.value;
+        const pwVal = $pw.value;
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(emailVal, pwVal)
+          .then((result) => {
+            window.location.href = "/index.html";
+          });
+      });
+
+      // signOut
+      $signOut.addEventListener("click", () => {
+        firebase.auth().signOut();
+      });
+    </script>
+  </body>
+</html>
