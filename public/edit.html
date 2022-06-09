@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>상세 - 애플마켓</title>
+    <title>글 수정 - 애플마켓</title>
     <!-- bootstrap -->
     <link
       rel="stylesheet"
@@ -56,87 +56,81 @@
         </div>
       </div>
     </nav>
-    <!-- 상세 페이지 -->
-    <div class="detail-wrap">
-      <div class="detail-pic"></div>
-      <div class="container">
-        <h3 class="title">상품명</h3>
-        <hr />
-        <div class="writer-info">
-          <p>판매자 : <span class="writer"></span></p>
-          <div class="edit-wrap">
-            <button id="edit">수정</button>
-            <button id="delete">삭제</button>
-          </div>
-        </div>
-        <p class="date">올린날짜</p>
-        <p class="desc">상세 내용</p>
-        <p class="price">가격</p>
-      </div>
+    <!-- 글 수정 -->
+    <div class="container mt-3">
+      <h2>중고거래 글 수정하기</h2>
+      <input
+        type="text"
+        class="form-control mt-2"
+        id="title"
+        placeholder="글 제목"
+      />
+      <textarea
+        class="form-control mt-2"
+        id="content"
+        placeholder="올릴 게시글 내용을 작성해주세요. (가품 및 판매금지품목은 게시가 제한될 수 있어요.)"
+      ></textarea>
+      <input
+        type="text"
+        class="form-control mt-2"
+        id="price"
+        placeholder="가격 (선택사항)"
+      />
+      <button class="btn btn-primary mt-3" id="send">수정하기</button>
     </div>
     <!-- javaScript -->
     <script type="module">
       // Firebase SDK
       const db = firebase.firestore();
-      // select
-      const query = new URLSearchParams(window.location.search);
-      const $detailPic = document.querySelector(".detail-pic");
-      const $title = document.querySelector(".title");
-      const $date = document.querySelector(".date");
-      const $desc = document.querySelector(".desc");
-      const $price = document.querySelector(".price");
-      const $writer = document.querySelector(".writer");
-      const $edit = document.querySelector("#edit");
-      const $delete = document.querySelector("#delete");
-      const $chat = document.querySelector("#chat");
+      const storage = firebase.storage();
+      // select Tag
+      const $title = document.getElementById("title");
+      const $content = document.getElementById("content");
+      const $price = document.getElementById("price");
+      const $send = document.getElementById("send");
       // query
       const queryString = new URLSearchParams(window.location.search);
       const thisQuery = queryString.get("id");
+      // 가격 천단위 설정
+      $price.addEventListener("keyup", () => {
+        let priceVal = $price.value;
+        $price.value = comma(uncomma(priceVal));
+      });
+      function comma(str) {
+        str = String(str);
+        return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
+      }
+      function uncomma(str) {
+        str = String(str);
+        return str.replace(/[^\d]+/g, "");
+      }
 
-      // poduct db 가져오기
+      // 원래 value값 가져오기
       db.collection("products")
         .doc(thisQuery)
-        .get((err) => console.log(err))
+        .get((err) => {
+          console.log(err);
+        })
         .then((doc) => {
-          $detailPic.style.background =
-            "url('" + doc.data().image + "') no-repeat center/ cover";
-          $title.innerHTML = doc.data().name;
-          $date.innerHTML =
-            doc.data().date[0] +
-            "년 " +
-            doc.data().date[1] +
-            "월 " +
-            doc.data().date[2] +
-            "일 ";
-          $desc.innerHTML = doc.data().content;
-          $price.innerHTML = doc.data().price + " 원";
-          $writer.innerHTML = doc.data().uName;
-
-          // 작성자의 게시물에만 수정,삭제 버튼 보이기
-          if (
-            JSON.parse(localStorage.getItem("userInfo"))?.uid === doc.data().uId
-          ) {
-            $edit.style.display = "inline-block";
-            $delete.style.display = "inline-block";
-          }
+          let contentValue = doc.data().content.replace(/<br>/gi, "\n");
+          $title.value = doc.data().name;
+          $content.value = contentValue;
+          $price.value = doc.data().price;
         });
-      // 수정하기
-      $edit.addEventListener("click", () => {
-        window.location.href = `/edit.html?id=${thisQuery}`;
-      });
-      // 삭제하기
-      $delete.addEventListener("click", () => {
-        const confirmDelete = confirm("삭제하시겠습니까?");
-        if (confirmDelete) {
-          db.collection("products")
-            .doc(thisQuery)
-            .delete()
-            .then(() => {
-              window.location.href = "/index.html";
-            });
-        } else {
-          return;
-        }
+
+      // 수정 버튼 클릭시
+      $send.addEventListener("click", () => {
+        const changed = {
+          name: $title.value,
+          content: $content.value,
+          price: $price.value,
+        };
+        db.collection("products")
+          .doc(thisQuery)
+          .update(changed)
+          .then(() => {
+            window.location.href = `/detail.html?id=${thisQuery}`;
+          });
       });
     </script>
   </body>
